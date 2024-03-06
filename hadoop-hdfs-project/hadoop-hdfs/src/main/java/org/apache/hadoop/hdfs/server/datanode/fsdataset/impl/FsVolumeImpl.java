@@ -882,7 +882,8 @@ public class FsVolumeImpl implements FsVolumeSpi {
 
               block.setGenerationStamp(
                   Block.getGenerationStamp(metaFile.getName()));
-              block.setNumBytes(blkFile.length());
+              // block.setNumBytes(blkFile.length());
+              block.setNumBytes(fileIoProvider.length(blkFile));
 
               LOG.trace("nextBlock({}, {}): advancing to {}",
                   storageID, bpid, block);
@@ -1539,7 +1540,8 @@ public class FsVolumeImpl implements FsVolumeSpi {
         .setDirectoryToUse(blockFiles[0].getParentFile())
         .setBytesToReserve(0)
         .build();
-    newReplicaInfo.setNumBytes(blockFiles[1].length());
+    // newReplicaInfo.setNumBytes(blockFiles[1].length());
+    newReplicaInfo.setNumBytes(fileIoProvider.length(blockFiles[1]));
     return newReplicaInfo;
   }
 

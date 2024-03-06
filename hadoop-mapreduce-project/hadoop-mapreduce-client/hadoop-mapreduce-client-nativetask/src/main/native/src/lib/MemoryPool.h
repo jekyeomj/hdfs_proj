@@ -49,7 +49,9 @@ public:
     }
   }
 
-  void init(uint32_t capacity) throw (OutOfMemoryException) {
+  // [JK] check memory exception
+  void init(uint32_t capacity) noexcept(false) {
+  // void init(uint32_t capacity) throw (OutOfMemoryException) {
     if (capacity > _capacity) {
       if (NULL != _base) {
         free(_base);

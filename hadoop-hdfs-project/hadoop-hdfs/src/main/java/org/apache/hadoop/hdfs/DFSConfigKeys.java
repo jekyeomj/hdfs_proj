@@ -1624,6 +1624,18 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
       DFS_DATANODE_TRANSFER_SOCKET_RECV_BUFFER_SIZE_DEFAULT =
       HdfsConstants.DEFAULT_DATA_SOCKET_SIZE;
 
+  // [JK] add option strings
+  public static final String
+      DFS_DATANODE_ZONEFS_DIR_KEY = "dfs.datanode.zonefs.dir";
+  public static final String
+      DFS_DATANODE_ZONEFS_META_DIR_KEY = "dfs.datanode.zonefs.meta.dir";
+  public static final String
+      DFS_DATANODE_ZONEFS_BUFFER_SIZE_KEY = "dfs.datanode.zonefs.buffer.size";
+  public static final int DFS_DATANODE_ZONEFS_BUFFER_SIZE_DEFAULT = 0;
+  public static final String
+      DFS_DATANODE_ZONEFS_MAX_IO_KEY = "dfs.datanode.zonefs.max.io";
+  public static final int DFS_DATANODE_ZONEFS_MAX_IO_DEFAULT = 32;
+
   public static final String
       DFS_DATA_TRANSFER_SERVER_TCPNODELAY =
       "dfs.data.transfer.server.tcpnodelay";

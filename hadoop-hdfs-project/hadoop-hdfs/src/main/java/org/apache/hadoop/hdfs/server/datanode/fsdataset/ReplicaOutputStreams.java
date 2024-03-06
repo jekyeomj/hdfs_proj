@@ -151,7 +151,8 @@ public class ReplicaOutputStreams implements Closeable {
   public void syncFileRangeIfPossible(long offset, long nbytes,
       int flags) throws NativeIOException {
     fileIoProvider.syncFileRange(
-        volume, outFd, offset, nbytes, flags);
+        // volume, outFd, offset, nbytes, flags);
+        volume, (FileOutputStream)dataOut, outFd, offset, nbytes, flags);
   }
 
   public void dropCacheBehindWrites(String identifier,

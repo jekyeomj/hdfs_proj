@@ -765,7 +765,8 @@ public class BlockPoolSlice {
       long genStamp = FsDatasetUtil.getGenerationStampFromFile(
           files, file, i);
       long blockId = Block.filename2id(file.getName());
-      Block block = new Block(blockId, file.length(), genStamp);
+      // Block block = new Block(blockId, file.length(), genStamp);
+      Block block = new Block(blockId, fileIoProvider.length(file), genStamp);
       addReplicaToReplicasMap(block, volumeMap, lazyWriteReplicaMap,
           isFinalized);
     }
@@ -870,7 +871,8 @@ public class BlockPoolSlice {
   private long validateIntegrityAndSetLength(File blockFile, long genStamp) {
     try {
       final File metaFile = FsDatasetUtil.getMetaFile(blockFile, genStamp);
-      long blockFileLen = blockFile.length();
+      // long blockFileLen = blockFile.length();
+      long blockFileLen = fileIoProvider.length(blockFile);
       long metaFileLen = metaFile.length();
       int crcHeaderLen = DataChecksum.getChecksumHeaderSize();
       if (!blockFile.exists() || blockFileLen == 0 ||
@@ -916,7 +918,8 @@ public class BlockPoolSlice {
             validFileLength = lastChunkStartPos;
           }
           // truncate if extra bytes are present without CRC
-          if (blockFile.length() > validFileLength) {
+          // if (blockFile.length() > validFileLength) {
+          if (fileIoProvider.length(blockFile) > validFileLength)
             try (RandomAccessFile blockRAF =
                      fileIoProvider.getRandomAccessFile(
                          volume, blockFile, "rw")) {

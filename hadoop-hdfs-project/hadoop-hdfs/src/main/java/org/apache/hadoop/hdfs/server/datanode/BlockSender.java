@@ -613,11 +613,13 @@ class BlockSender implements java.io.Closeable {
         sockOut.write(buf, headerOff, dataOff - headerOff);
 
         // no need to flush since we know out is not a buffered stream
-        FileChannel fileCh = ((FileInputStream)ris.getDataIn()).getChannel();
+        // FileChannel fileCh = ((FileInputStream)ris.getDataIn()).getChannel();
+        FileInputStream fis = (FileInputStream)ris.getDataIn();
         LongWritable waitTime = new LongWritable();
         LongWritable transferTime = new LongWritable();
         fileIoProvider.transferToSocketFully(
-            ris.getVolumeRef().getVolume(), sockOut, fileCh, blockInPosition,
+            // ris.getVolumeRef().getVolume(), sockOut, fileCh, blockInPosition,
+            ris.getVolumeRef().getVolume(), sockOut, fis, blockInPosition,
             dataLen, waitTime, transferTime);
         datanode.metrics.addSendDataPacketBlockedOnNetworkNanos(waitTime.get());
         datanode.metrics.addSendDataPacketTransferNanos(transferTime.get());
@@ -797,9 +799,11 @@ class BlockSender implements java.io.Closeable {
           && baseStream instanceof SocketOutputStream
           && ris.getDataIn() instanceof FileInputStream;
       if (transferTo) {
-        FileChannel fileChannel =
-            ((FileInputStream)ris.getDataIn()).getChannel();
-        blockInPosition = fileChannel.position();
+        // FileChannel fileChannel =
+        //     ((FileInputStream)ris.getDataIn()).getChannel();
+        // blockInPosition = fileChannel.position();
+        FileInputStream fis = (FileInputStream)ris.getDataIn();
+        blockInPosition = fileIoProvider.getPosition(fis);
         streamForSendChunks = baseStream;
         maxChunksPerPacket = numberOfChunks(TRANSFERTO_BUFFER_SIZE);
         

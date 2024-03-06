@@ -124,7 +124,9 @@ public:
 
   void sort(SortAlgorithm type);
 
-  void spill(IFileWriter * writer) throw (IOException, UnsupportException);
+  // [JK] check Exception
+  void spill(IFileWriter * writer) noexception(false);
+  // void spill(IFileWriter * writer) throw (IOException, UnsupportException);
 
   uint32_t getMemoryBlockCount() const {
     return _memBlocks.size();

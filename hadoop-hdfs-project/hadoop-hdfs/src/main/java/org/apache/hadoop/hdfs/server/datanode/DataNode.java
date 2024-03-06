@@ -501,7 +501,9 @@ public class DataNode extends ReconfigurableBase
   DataNode(final Configuration conf) throws DiskErrorException {
     super(conf);
     this.tracer = createTracer(conf);
-    this.fileIoProvider = new FileIoProvider(conf, this);
+    // this.fileIoProvider = new FileIoProvider(conf, this);
+    this.fileIoProvider = ZoneFS.hasZoneFsConfig(conf)
+      ? new ZoneFSFileIoProvider(conf, this) : new FileIoProvider(conf, this);
     this.fileDescriptorPassingDisabledReason = null;
     this.maxNumberOfBlocksToLog = 0;
     this.confVersion = null;
@@ -534,7 +536,9 @@ public class DataNode extends ReconfigurableBase
            final SecureResources resources) throws IOException {
     super(conf);
     this.tracer = createTracer(conf);
-    this.fileIoProvider = new FileIoProvider(conf, this);
+    // this.fileIoProvider = new FileIoProvider(conf, this);
+    this.fileIoProvider = ZoneFs.hasZoneFsConfig(conf)
+      ? new ZoneFsFileIoProvider(conf, this) : new FileIoProvider(conf, this);
     this.dataSetLockManager = new DataSetLockManager(conf);
     this.blockScanner = new BlockScanner(this);
     this.lastDiskErrorCheck = 0;
@@ -2645,9 +2649,13 @@ public class DataNode extends ReconfigurableBase
       metrics.setDataNodeBlockRecoveryWorkerCount(0);
     }
 
-   // IPC server needs to be shutdown late in the process, otherwise
-   // shutdown command response won't get sent.
-   if (ipcServer != null) {
+    if (this.fileIoProvider instanceof ZoneFsFileIoProvider) {
+      ZoneFsFileIoProvider.shutdown();
+    }
+
+    // IPC server needs to be shutdown late in the process, otherwise
+    // shutdown command response won't get sent.
+    if (ipcServer != null) {
       ipcServer.stop();
     }
 
