@@ -32,6 +32,10 @@ RUN echo APT::Install-Suggests "0"\; >>  /etc/apt/apt.conf.d/10disableextras
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_TERSE true
 
+ENV http_proxy http://proxy.pdl.cmu.edu:3128/
+ENV https_proxy http://proxy.pdl.cmu.edu:3128/
+ENV no_proxy localhost, 127.0.0.1, *.cmu.edu
+
 ######
 # Platform package dependency resolver
 ######
@@ -44,6 +48,7 @@ RUN chmod a+x pkg-resolver/*.sh pkg-resolver/*.py \
 ######
 # hadolint ignore=DL3008,SC2046
 RUN apt-get -q update \
+    && apt-get -q install -y apt-utils vim \
     && apt-get -q install -y --no-install-recommends python3 \
     && apt-get -q install -y --no-install-recommends $(pkg-resolver/resolve.py ubuntu:focal) \
     && apt-get clean \
@@ -94,6 +99,8 @@ RUN pkg-resolver/install-intel-isa-l.sh ubuntu:focal
 # So tell Yetus not to read the rest of the file:
 # YETUS CUT HERE
 ###
+COPY pkg-resolver/settings.xml /root/.m2/
+RUN chmod 777 -R /root/.m2/
 
 # Add a welcome message and environment checks.
 COPY hadoop_env_checks.sh /root/hadoop_env_checks.sh
