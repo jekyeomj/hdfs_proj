@@ -44,9 +44,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * ZoneFS is a file system which makes zoned block devices accessible
- * through files. Zoned block devices has concepte of zones and ZoneFS
- * provides files corresponding to each zone. This class manages ZoneFS
+ * ZoneFs is a file system which makes zoned block devices accessible
+ * through files. Zoned block devices has concepte of zones and ZoneFs
+ * provides files corresponding to each zone. This class manages ZoneFs
  * zone files' status and manage allocation of each zone file.
  */
 public class ZoneFs {

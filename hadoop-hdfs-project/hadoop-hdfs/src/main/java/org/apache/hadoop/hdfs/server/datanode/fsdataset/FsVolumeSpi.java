@@ -297,8 +297,7 @@ public interface FsVolumeSpi
         this.metaFile = metaFile;
       }
       this.blockLength = (blockFile != null) ?
-          // new File(basePath, blockFile).length() : 0;
-          vol.getFileIoProvider().length(blockFile) : 0;
+          vol.getFileIoProvider().length(new File(basePath, blockFile)) : 0;
       this.volume = vol;
       this.fileRegion = null;
     }

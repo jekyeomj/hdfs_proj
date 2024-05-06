@@ -502,8 +502,8 @@ public class DataNode extends ReconfigurableBase
     super(conf);
     this.tracer = createTracer(conf);
     // this.fileIoProvider = new FileIoProvider(conf, this);
-    this.fileIoProvider = ZoneFS.hasZoneFsConfig(conf)
-      ? new ZoneFSFileIoProvider(conf, this) : new FileIoProvider(conf, this);
+    this.fileIoProvider = ZoneFs.hasZoneFsConfig(conf)
+      ? new ZoneFsFileIoProvider(conf, this) : new FileIoProvider(conf, this);
     this.fileDescriptorPassingDisabledReason = null;
     this.maxNumberOfBlocksToLog = 0;
     this.confVersion = null;

@@ -48,7 +48,7 @@ RUN chmod a+x pkg-resolver/*.sh pkg-resolver/*.py \
 ######
 # hadolint ignore=DL3008,SC2046
 RUN apt-get -q update \
-    && apt-get -q install -y apt-utils vim \
+    && apt-get -q install -y apt-utils vim libaio-dev \
     && apt-get -q install -y --no-install-recommends python3 \
     && apt-get -q install -y --no-install-recommends $(pkg-resolver/resolve.py ubuntu:focal) \
     && apt-get clean \

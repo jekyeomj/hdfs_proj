@@ -919,7 +919,7 @@ public class BlockPoolSlice {
           }
           // truncate if extra bytes are present without CRC
           // if (blockFile.length() > validFileLength) {
-          if (fileIoProvider.length(blockFile) > validFileLength)
+          if (fileIoProvider.length(blockFile) > validFileLength) {
             try (RandomAccessFile blockRAF =
                      fileIoProvider.getRandomAccessFile(
                          volume, blockFile, "rw")) {

@@ -125,7 +125,7 @@ public:
   void sort(SortAlgorithm type);
 
   // [JK] check Exception
-  void spill(IFileWriter * writer) noexception(false);
+  void spill(IFileWriter * writer) noexcept(false);
   // void spill(IFileWriter * writer) throw (IOException, UnsupportException);
 
   uint32_t getMemoryBlockCount() const {
