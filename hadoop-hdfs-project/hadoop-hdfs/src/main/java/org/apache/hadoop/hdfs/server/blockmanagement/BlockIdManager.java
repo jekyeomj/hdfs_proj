@@ -258,9 +258,9 @@ public class BlockIdManager {
   /**
    * Increments, logs and then returns the block ID
    */
-  long nextBlockId(BlockType blockType) {
+  long nextBlockId(BlockType blockType, Short streamId) {
     switch(blockType) {
-    case CONTIGUOUS: return blockIdGenerator.nextValue();
+    case CONTIGUOUS: return blockIdGenerator.nextZNSValue(streamId);
     case STRIPED: return blockGroupIdGenerator.nextValue();
     default:
       throw new IllegalArgumentException(

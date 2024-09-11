@@ -452,6 +452,31 @@ extern  "C" {
     hdfsFile hdfsOpenFile(hdfsFS fs, const char* path, int flags,
                           int bufferSize, short replication, tSize blocksize);
 
+    /** 
+     * hdfsZNSOpenFile - Open a hdfs file in given mode.
+     * @deprecated    Use the hdfsStreamBuilder functions instead.
+     * This function does not support setting block sizes bigger than 2 GB.
+     *
+     * @param fs The configured filesystem handle.
+     * @param path The full path to the file.
+     * @param flags - an | of bits/fcntl.h file flags - supported flags are O_RDONLY, O_WRONLY (meaning create or overwrite i.e., implies O_TRUNCAT), 
+     * O_WRONLY|O_APPEND. Other flags are generally ignored other than (O_RDWR || (O_EXCL & O_CREAT)) which return NULL and set errno equal ENOTSUP.
+     * @param bufferSize Size of buffer for read/write - pass 0 if you want
+     * to use the default configured values.
+     * @param replication Block replication - pass 0 if you want to use
+     * the default configured values.
+     * @param blocksize Size of block - pass 0 if you want to use the
+     * default configured values.  Note that if you want a block size bigger
+     * than 2 GB, you must use the hdfsStreamBuilder API rather than this
+     * deprecated function.
+     * @param streamId streamId
+     * @return Returns the handle to the open file or NULL on error.
+     */
+    LIBHDFS_EXTERNAL
+    hdfsFile hdfsZNSOpenFile(hdfsFS fs, const char* path, int flags,
+                          int bufferSize, short replication, tSize blocksize, 
+                          short streamId);
+
     /**
      * hdfsOpenFileBuilderAlloc - Allocate a HDFS open file builder.
      *

@@ -2028,7 +2028,7 @@ public class TestBlockManager {
 
     Block legacy = new Block(-1, 10, legancyGenerationStampLimit / 10);
     Block striped = new Block(
-        bm.nextBlockId(BlockType.STRIPED), 10,
+        bm.nextBlockId(BlockType.STRIPED, (short) 0), 10,
         legancyGenerationStampLimit + 10);
 
     DatanodeInfo legacyDnInfo = DFSTestUtil.getLocalDatanodeInfo();

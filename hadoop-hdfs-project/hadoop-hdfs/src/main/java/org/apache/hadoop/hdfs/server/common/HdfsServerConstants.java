@@ -399,6 +399,12 @@ public interface HdfsServerConstants {
 
   long BLOCK_GROUP_INDEX_MASK = 15;
   byte MAX_BLOCKS_IN_GROUP = 16;
+
+  long BLOCK_STREAM_INDEX_MASK = 63;
+  byte MAX_BLOCKS_IN_STREAM = 64;
+
+  long REPLICATION_INDEX_MASK = 63;
+  byte MAX_REPLICATION = 64;
   // maximum bandwidth per datanode 1TB/sec.
   long MAX_BANDWIDTH_PER_DATANODE = 1099511627776L;
 }

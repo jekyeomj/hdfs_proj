@@ -263,6 +263,9 @@ import org.apache.hadoop.util.concurrent.AsyncGet;
 import static org.apache.hadoop.ipc.internal.ShadedProtobufHelper.getRemoteException;
 import static org.apache.hadoop.ipc.internal.ShadedProtobufHelper.ipc;
 
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.MAX_REPLICATION;
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.REPLICATION_INDEX_MASK;
+
 /**
  * This class forwards NN's ClientProtocol calls as RPC calls to the NN server
  * while translating from the parameter types used in ClientProtocol to the
@@ -350,6 +353,7 @@ public class ClientNamenodeProtocolTranslatorPB implements
         .convert(ipc(() -> rpcProxy.getServerDefaults(null, req).getServerDefaults()));
   }
 
+  // JJK need add streamID
   @Override
   public HdfsFileStatus create(String src, FsPermission masked,
       String clientName, EnumSetWritable<CreateFlag> flag,
@@ -357,6 +361,8 @@ public class ClientNamenodeProtocolTranslatorPB implements
       CryptoProtocolVersion[] supportedVersions, String ecPolicyName,
       String storagePolicy)
       throws IOException {
+        short streamId = replication / MAX_REPLICATION;
+        replication = replication & REPLICATION_INDEX_MASK;
     CreateRequestProto.Builder builder = CreateRequestProto.newBuilder()
         .setSrc(src)
         .setMasked(PBHelperClient.convert(masked))
@@ -364,7 +370,8 @@ public class ClientNamenodeProtocolTranslatorPB implements
         .setCreateFlag(PBHelperClient.convertCreateFlag(flag))
         .setCreateParent(createParent)
         .setReplication(replication)
-        .setBlockSize(blockSize);
+        .setBlockSize(blockSize)
+        .setStreamId(streamId);
     if (ecPolicyName != null) {
       builder.setEcPolicyName(ecPolicyName);
     }
@@ -481,10 +488,10 @@ public class ClientNamenodeProtocolTranslatorPB implements
   @Override
   public LocatedBlock addBlock(String src, String clientName,
       ExtendedBlock previous, DatanodeInfo[] excludeNodes, long fileId,
-      String[] favoredNodes, EnumSet<AddBlockFlag> addBlockFlags)
+      String[] favoredNodes, EnumSet<AddBlockFlag> addBlockFlags, short streamId)
       throws IOException {
     AddBlockRequestProto.Builder req = AddBlockRequestProto.newBuilder()
-        .setSrc(src).setClientName(clientName).setFileId(fileId);
+        .setSrc(src).setClientName(clientName).setFileId(fileId).setStreamId(streamId);
     if (previous != null)
       req.setPrevious(PBHelperClient.convert(previous));
     if (excludeNodes != null)

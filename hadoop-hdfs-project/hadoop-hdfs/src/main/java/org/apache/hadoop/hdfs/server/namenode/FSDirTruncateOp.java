@@ -231,10 +231,11 @@ final class FSDirTruncateOp {
     boolean shouldRecoverNow = (newBlock == null);
     BlockInfo oldBlock = file.getLastBlock();
 
+    // JJK: use file's streamId?
     boolean shouldCopyOnTruncate = shouldCopyOnTruncate(fsn, file, oldBlock);
     if (newBlock == null) {
       newBlock = (shouldCopyOnTruncate) ?
-          fsn.createNewBlock(BlockType.CONTIGUOUS)
+          fsn.createNewBlock(BlockType.CONTIGUOUS, oldBlock.getStreamId())
           : new Block(oldBlock.getBlockId(), oldBlock.getNumBytes(),
           fsn.nextGenerationStamp(fsn.getBlockManager().isLegacyBlock(
               oldBlock)));

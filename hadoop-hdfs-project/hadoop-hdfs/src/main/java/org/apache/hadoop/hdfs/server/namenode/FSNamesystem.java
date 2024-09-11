@@ -3246,9 +3246,9 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
    * Create new block with a unique block id and a new generation stamp.
    * @param blockType is the file under striping or contiguous layout?
    */
-  Block createNewBlock(BlockType blockType) throws IOException {
+  Block createNewBlock(BlockType blockType, short streamId) throws IOException {
     assert hasWriteLock();
-    Block b = new Block(nextBlockId(blockType), 0, 0);
+    Block b = new Block(nextBlockId(blockType, streamId), 0, 0);
     // Increment the generation stamp for every new block.
     b.setGenerationStamp(nextGenerationStamp(false));
     return b;
@@ -5848,10 +5848,10 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
    * Increments, logs and then returns the block ID
    * @param blockType is the file under striping or contiguous layout?
    */
-  private long nextBlockId(BlockType blockType) throws IOException {
+  private long nextBlockId(BlockType blockType, short streamId) throws IOException {
     assert hasWriteLock();
     checkNameNodeSafeMode("Cannot get next block ID");
-    final long blockId = blockManager.nextBlockId(blockType);
+    final long blockId = blockManager.nextBlockId(blockType, streamId);
     getEditLog().logAllocateBlockId(blockId);
     // NB: callers sync the log
     return blockId;

@@ -125,6 +125,7 @@ public class DFSOutputStream extends FSOutputSummer
   protected long lastFlushOffset = 0; // offset when flush was invoked
   protected long initialFileSize = 0; // at time of file open
   private final short blockReplication; // replication factor of file
+  private final short blockStreamId; // streamId factor of file
   protected boolean shouldSyncBlock = false; // force blocks to disk upon close
   private final EnumSet<AddBlockFlag> addBlockFlags;
   protected final AtomicReference<CachingStrategy> cachingStrategy;
@@ -208,6 +209,7 @@ public class DFSOutputStream extends FSOutputSummer
     }
     this.blockSize = stat.getBlockSize();
     this.blockReplication = stat.getReplication();
+    this.blockStreamId = stat.getStreamId();
     this.fileEncryptionInfo = stat.getFileEncryptionInfo();
     this.cachingStrategy = new AtomicReference<>(
         dfsClient.getDefaultWriteCachingStrategy());

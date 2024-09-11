@@ -22,6 +22,9 @@ import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.server.namenode.INodeId;
 import org.apache.hadoop.util.SequentialNumber;
 
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.BLOCK_STREAM_INDEX_MASK;
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.MAX_BLOCKS_IN_STREAM;
+
 /**
  * Generate the next valid block ID by incrementing the maximum block
  * ID allocated so far, starting at 2^30+1.
@@ -43,6 +46,23 @@ public class SequentialBlockIdGenerator extends SequentialNumber {
   SequentialBlockIdGenerator(BlockManager blockManagerRef) {
     super(LAST_RESERVED_BLOCK_ID);
     this.blockManager = blockManagerRef;
+  }
+
+  public long nextZNSValue(short streamId) {
+    skipTo((getCurrentValue() & ~BLOCK_STREAM_INDEX_MASK) + MAX_BLOCKS_IN_STREAM + (streamId & BLOCK_STREAM_INDEX_MASK));
+
+    final Block b = new Block(getCurrentValue());
+
+    while(isValidBlock(b)) {
+      skipTo(getCurrentValue() + MAX_BLOCKS_IN_STREAM);
+      b.setBlockId(getCurrentValue());
+    }
+    if (b.getBlockId() < 0) {
+      throw new IllegalStateException("All positive block IDs are used, " +
+          "wrapping to negative IDs, " +
+          "which might conflict with erasure coded block groups.");
+    }
+    return b.getBlockId();
   }
 
   @Override // NumberGenerator

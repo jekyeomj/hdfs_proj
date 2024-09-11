@@ -932,6 +932,26 @@ static jthrowable getDefaultBlockSize(JNIEnv *env, jobject jFS,
     return NULL;
 }
 
+hdfsFile hdfsZNSOpenFile(hdfsFS fs, const char *path, int flags,
+                         int bufferSize, short replication, tSize blockSize,
+                         short streamId)
+{
+    struct hdfsStreamBuilder *bld = hdfsStreamBuilderAlloc(fs, path, flags);
+    if (bufferSize != 0) {
+      hdfsStreamBuilderSetBufferSize(bld, bufferSize);
+    }
+    if (replication != 0) {
+      hdfsStreamBuilderSetReplication(bld, replication);
+    }
+    if (blockSize != 0) {
+      hdfsStreamBuilderSetDefaultBlockSize(bld, blockSize);
+    }
+    if (streamId != 0) {
+      hdfsStreamBuilderSetStreamId(bld, streamId); 
+    }
+    return hdfsStreamBuilderBuild(bld);
+}
+
 hdfsFile hdfsOpenFile(hdfsFS fs, const char *path, int flags,
                       int bufferSize, short replication, tSize blockSize)
 {
@@ -953,6 +973,7 @@ struct hdfsStreamBuilder {
     int flags;
     int32_t bufferSize;
     int16_t replication;
+    int16_t streamId;
     int64_t defaultBlockSize;
     char path[1];
 };
@@ -979,6 +1000,7 @@ struct hdfsStreamBuilder *hdfsStreamBuilderAlloc(hdfsFS fs,
     bld->flags = flags;
     bld->bufferSize = 0;
     bld->replication = 0;
+    bld->streamId = 0;
     bld->defaultBlockSize = 0;
     memcpy(bld->path, path, path_len);
     bld->path[path_len] = '\0';
@@ -1020,6 +1042,17 @@ int hdfsStreamBuilderSetDefaultBlockSize(struct hdfsStreamBuilder *bld,
         return -1;
     }
     bld->defaultBlockSize = defaultBlockSize;
+    return 0;
+}
+
+int hdfsStreamBuilderSetStreamId(struct hdfsStreamBuilder *bld,
+                                 int16_t streamId)
+{
+    if ((bld->flags & O_ACCMODE) != O_WRONLY) {
+        errno = EINVAL;
+        return -1;
+    }
+    bld->streamId = streamId;
     return 0;
 }
 
@@ -1101,7 +1134,8 @@ static void setFileFlagCapabilities(hdfsFile file, jobject jFile) {
 }
 
 static hdfsFile hdfsOpenFileImpl(hdfsFS fs, const char *path, int flags,
-                  int32_t bufferSize, int16_t replication, int64_t blockSize)
+                  int32_t bufferSize, int16_t replication, int64_t blockSize,
+                  int16_t streamId)
 {
     /*
       JAVA EQUIVALENT:
@@ -1158,7 +1192,7 @@ static hdfsFile hdfsOpenFileImpl(hdfsFS fs, const char *path, int flags,
         signature = JMETHOD1(JPARAM(HADOOP_PATH), JPARAM(HADOOP_FSDOSTRM));
     } else {
         method = "create";
-        signature = JMETHOD2(JPARAM(HADOOP_PATH), "ZISJ", JPARAM(HADOOP_FSDOSTRM));
+        signature = JMETHOD2(JPARAM(HADOOP_PATH), "ZISJS", JPARAM(HADOOP_FSDOSTRM));
     }
 
     /* Create an object of org.apache.hadoop.fs.Path */
@@ -1234,6 +1268,7 @@ static hdfsFile hdfsOpenFileImpl(hdfsFS fs, const char *path, int flags,
         // WRITE/CREATE
         jboolean jOverWrite = 1;
         jlong jBlockSize = blockSize;
+        jshort jStreamId = streamId;
 
         if (jBlockSize == 0) {
             jthr = getDefaultBlockSize(env, jFS, jPath, &jBlockSize);
@@ -1244,7 +1279,7 @@ static hdfsFile hdfsOpenFileImpl(hdfsFS fs, const char *path, int flags,
         }
         jthr = invokeMethod(env, &jVal, INSTANCE, jFS, JC_FILE_SYSTEM,
                 method, signature, jPath, jOverWrite, jBufferSize,
-                jReplication, jBlockSize);
+                jReplication, jBlockSize, jStreamId);
     }
     if (jthr) {
         ret = printExceptionAndFree(env, jthr, PRINT_EXC_ALL,
@@ -1296,7 +1331,8 @@ done:
 hdfsFile hdfsStreamBuilderBuild(struct hdfsStreamBuilder *bld)
 {
     hdfsFile file = hdfsOpenFileImpl(bld->fs, bld->path, bld->flags,
-                  bld->bufferSize, bld->replication, bld->defaultBlockSize);
+                  bld->bufferSize, bld->replication, bld->defaultBlockSize,
+                  bld->streamId);
     int prevErrno = errno;
     hdfsStreamBuilderFree(bld);
     errno = prevErrno;

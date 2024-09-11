@@ -252,8 +252,8 @@ class FSDirWriteFileOp {
                                   ExtendedBlock.getLocalBlock(previous));
 
     final BlockType blockType = pendingFile.getBlockType();
-    // allocate new block, record block locations in INode.
-    Block newBlock = fsn.createNewBlock(blockType);
+    // JJK TODO : add streamId
+    Block newBlock = fsn.createNewBlock(blockType, previous.getStreamId());
     INodesInPath inodesInPath = INodesInPath.fromINode(pendingFile);
     saveAllocatedBlock(fsn, src, inodesInPath, newBlock, targets, blockType);
 

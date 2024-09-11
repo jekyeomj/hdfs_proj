@@ -32,6 +32,8 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableFactories;
 import org.apache.hadoop.io.WritableFactory;
 
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.BLOCK_STREAM_INDEX_MASK;
+
 /**
  * A Block is a Hadoop FS primitive, identified by its block ID (a long). A
  * block also has an accompanying generation stamp. A generation stamp is a
@@ -46,6 +48,7 @@ import org.apache.hadoop.io.WritableFactory;
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
 public class Block implements Writable, Comparable<Block> {
+  public static final long GROUP_STREAM_ID = 100;
   public static final String BLOCK_FILE_PREFIX = "blk_";
   public static final String METADATA_EXTENSION = ".meta";
   static {                                      // register a ctor
@@ -100,6 +103,11 @@ public class Block implements Writable, Comparable<Block> {
     return m.matches() ? Long.parseLong(m.group(1)) : 0;
   }
 
+  public static long getStreamId(String metaOrBlockFile) {
+    Matcher m = metaOrBlockFilePattern.matcher(metaOrBlockFile);
+    return m.matches() ? (Long.parseLong(m.group(1)) & BLOCK_STREAM_INDEX_MASK) : 0;
+  }
+
   private long blockId;
   private long numBytes;
   private long generationStamp;
@@ -133,6 +141,10 @@ public class Block implements Writable, Comparable<Block> {
 
   public long getBlockId() {
     return blockId;
+  }
+
+  public long getStreamId() {
+    return (blockId & BLOCK_STREAM_INDEX_MASK);
   }
 
   public void setBlockId(long bid) {

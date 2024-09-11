@@ -2199,6 +2199,7 @@ public class DFSTestUtil {
       String file, INodeFile fileNode,
       String clientName, ExtendedBlock previous, int numStripes, int len)
       throws Exception {
+        // JJK TODO addBlock need to add streamID
     fs.getClient().namenode.addBlock(file, clientName, previous, null,
         fileNode.getId(), null, null);
 

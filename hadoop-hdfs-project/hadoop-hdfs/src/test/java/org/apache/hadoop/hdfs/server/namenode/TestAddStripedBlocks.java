@@ -290,6 +290,7 @@ public class TestAddStripedBlocks {
       // 1. create the UC striped block
       FSDirectory fsdir = cluster.getNamesystem().getFSDirectory();
       INodeFile fileNode = fsdir.getINode4Write(file.toString()).asFile();
+      // JJK TODO check getAdditionalBlock need more parameter
       cluster.getNamesystem().getAdditionalBlock(file.toString(),
           fileNode.getId(), dfs.getClient().getClientName(), null, null, null, null);
       BlockInfo lastBlock = fileNode.getLastBlock();

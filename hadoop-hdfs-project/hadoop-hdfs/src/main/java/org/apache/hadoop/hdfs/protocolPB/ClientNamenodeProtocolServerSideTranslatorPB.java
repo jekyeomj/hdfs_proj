@@ -594,7 +594,7 @@ public class ClientNamenodeProtocolServerSideTranslatorPB implements
   @Override
   public AddBlockResponseProto addBlock(RpcController controller,
       AddBlockRequestProto req) throws ServiceException {
-    
+    // JJK TODO addBlock need to add streamID
     try {
       List<DatanodeInfoProto> excl = req.getExcludeNodesList();
       List<String> favor = req.getFavoredNodesList();

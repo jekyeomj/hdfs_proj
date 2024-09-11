@@ -244,7 +244,8 @@ public class NameNodeAdapter {
     fsn.writeLock();
     try {
       INodeFile file = (INodeFile)fsn.getFSDirectory().getINode(src);
-      Block newBlock = fsn.createNewBlock(BlockType.CONTIGUOUS);
+      // JJK: only called for testing
+      Block newBlock = fsn.createNewBlock(BlockType.CONTIGUOUS, (short) 0);
       INodesInPath inodesInPath = INodesInPath.fromINode(file);
       FSDirWriteFileOp.saveAllocatedBlock(
           fsn, src, inodesInPath, newBlock, targets, BlockType.CONTIGUOUS);

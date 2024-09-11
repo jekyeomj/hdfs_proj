@@ -92,6 +92,8 @@ import static org.apache.hadoop.util.Preconditions.checkArgument;
 import static org.apache.hadoop.fs.CommonConfigurationKeysPublic.*;
 import static org.apache.hadoop.fs.impl.PathCapabilitiesSupport.validatePathCapabilityArgs;
 
+import static org.apache.hadoop.hdfs.server.common.HdfsServerConstants.MAX_REPLICATION;
+
 /****************************************************************
  * An abstract base class for a fairly generic filesystem.  It
  * may be implemented as a distributed filesystem, or as a "local"
@@ -1200,12 +1202,36 @@ public abstract class FileSystem extends Configured
    * @throws IOException IO failure
    * @return output stream.
    */
+  // JJK strat this
   public FSDataOutputStream create(Path f,
       boolean overwrite,
       int bufferSize,
       short replication,
       long blockSize) throws IOException {
     return create(f, overwrite, bufferSize, replication, blockSize, null);
+  }
+
+  /**
+   * Create an FSDataOutputStream at the indicated Path.
+   * @param f the file name to open
+   * @param overwrite if a file with this name already exists, then if true,
+   *   the file will be overwritten, and if false an error will be thrown.
+   * @param bufferSize the size of the buffer to be used.
+   * @param replication required block replication for the file.
+   * @param blockSize the size of the buffer to be used.
+   * @param streamId the streamId
+   * @throws IOException IO failure
+   * @return output stream.
+   */
+  // JJK strat this
+  public FSDataOutputStream create(Path f,
+      boolean overwrite,
+      int bufferSize,
+      short replication,
+      long blockSize,
+      short streamId) throws IOException {
+    short rep_stream = replication + (streamId * MAX_REPLICATION);
+    return create(f, overwrite, bufferSize, rep_stream, blockSize, null);
   }
 
   /**

@@ -5700,8 +5700,8 @@ public class BlockManager implements BlockStatsMXBean {
     return blockIdManager.isLegacyBlock(block);
   }
 
-  public long nextBlockId(BlockType blockType) {
-    return blockIdManager.nextBlockId(blockType);
+  public long nextBlockId(BlockType blockType, short streamId) {
+    return blockIdManager.nextBlockId(blockType, streamId);
   }
 
   boolean isGenStampInFuture(Block block) {
