@@ -1253,6 +1253,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * at the creation time only. HDFS could move the blocks during balancing or
    * replication, to move the blocks from favored nodes. A value of null means
    * no favored nodes for this create
+   * JJK called from Distributed File System
    */
   public DFSOutputStream create(String src, FsPermission permission,
       EnumSet<CreateFlag> flag, boolean createParent, short replication,
